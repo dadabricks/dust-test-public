@@ -1,0 +1,769 @@
+{
+  "datasets": [
+    {
+      "name": "4214659f",
+      "displayName": "sf_airbnb",
+      "queryLines": [
+        "SELECT   ",
+        "  * ",
+        "FROM  dm_qa.huanming_qa.sf_airbnb",
+        "LIMIT  100"
+      ]
+    },
+    {
+      "name": "61b6d88c",
+      "displayName": "Per Neighborhoods",
+      "queryLines": [
+        "-- airbnb neighbourhood_cleansed stats",
+        "WITH neighborhood_stats AS (",
+        "  SELECT",
+        "    neighbourhood_cleansed,",
+        "    COUNT(*) AS total_listings,",
+        "    AVG(review_scores_rating) AS avg_review_score",
+        "  FROM",
+        "    dm_qa.huanming_qa.sf_airbnb",
+        "  GROUP BY",
+        "    neighbourhood_cleansed",
+        "),",
+        "neighborhood_median AS (",
+        "  SELECT",
+        "    neighbourhood_cleansed,",
+        "    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY review_scores_rating) AS median_review_score",
+        "  FROM",
+        "    dm_qa.huanming_qa.sf_airbnb",
+        "  GROUP BY",
+        "    neighbourhood_cleansed",
+        ")",
+        "SELECT",
+        "  ns.neighbourhood_cleansed,",
+        "  ns.total_listings,",
+        "  ns.avg_review_score,",
+        "  nm.median_review_score",
+        "FROM",
+        "  neighborhood_stats ns",
+        "JOIN",
+        "  neighborhood_median nm",
+        "ON",
+        "  ns.neighbourhood_cleansed = nm.neighbourhood_cleansed",
+        "ORDER BY",
+        "  ns.total_listings DESC",
+        "LIMIT 10"
+      ]
+    },
+    {
+      "name": "8bf848ca",
+      "displayName": "Superhosts Ratio",
+      "queryLines": [
+        "SELECT",
+        "  SUM(CASE WHEN host_is_superhost = 't' THEN 1 ELSE 0 END) / COUNT(*) AS ratio_of_superhost",
+        "FROM",
+        "    dm_qa.huanming_qa.sf_airbnb   ",
+        "    WHERE  ",
+        "  ",
+        "       "
+      ]
+    },
+    {
+      "name": "dc5bb0be",
+      "displayName": "Measure",
+      "queryLines": [
+        "SELECT * FROM samples.nyctaxi.trips"
+      ],
+      "columns": [
+        {
+          "displayName": "p per d",
+          "description": "",
+          "expression": "try_divide(SUM(fare_amount), SUM(trip_distance))"
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "cafff554",
+      "displayName": "New Page",
+      "layout": [
+        {
+          "widget": {
+            "name": "66dc76db",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8bf848ca",
+                  "fields": [
+                    {
+                      "name": "ratio_of_superhost",
+                      "expression": "`ratio_of_superhost`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "ratio_of_superhost",
+                  "displayName": "ratio_of_superhost"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": ""
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 23,
+            "width": 2,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "04632d96",
+            "multilineTextboxSpec": {
+              "lines": [
+                "### Details"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 22,
+            "width": 6,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "42c6f456",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4214659f",
+                  "fields": [
+                    {
+                      "name": "sum(price)",
+                      "expression": "SUM(`price`)"
+                    },
+                    {
+                      "name": "neighbourhood_cleansed",
+                      "expression": "`neighbourhood_cleansed`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "sum(price)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Sum of price"
+                },
+                "color": {
+                  "fieldName": "neighbourhood_cleansed",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "neighbourhood_cleansed"
+                },
+                "label": {
+                  "show": true
+                }
+              },
+              "frame": {
+                "showDescription": false,
+                "description": "",
+                "title": "",
+                "showTitle": false
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 17,
+            "width": 2,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "1fa8e53a",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "61b6d88c",
+                  "fields": [
+                    {
+                      "name": "neighbourhood_cleansed",
+                      "expression": "`neighbourhood_cleansed`"
+                    },
+                    {
+                      "name": "sum(total_listings)",
+                      "expression": "SUM(`total_listings`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "neighbourhood_cleansed",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "neighbourhood_cleansed"
+                },
+                "y": {
+                  "fieldName": "sum(total_listings)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Sum of total_listings"
+                },
+                "label": {
+                  "show": false
+                }
+              },
+              "annotations": [
+                {
+                  "type": "horizontal-line",
+                  "encodings": {
+                    "y": {
+                      "dataValue": "14",
+                      "dataType": "INTEGER"
+                    }
+                  }
+                }
+              ],
+              "frame": {
+                "title": "Price per neighbourhood_cleansed",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 2,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "91f46027",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4214659f",
+                  "fields": [
+                    {
+                      "name": "property_type",
+                      "expression": "`property_type`"
+                    },
+                    {
+                      "name": "bathrooms",
+                      "expression": "`bathrooms`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "property_type",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  },
+                  "displayName": "property_type"
+                },
+                "y": {
+                  "fieldName": "bathrooms",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "bathrooms"
+                }
+              },
+              "frame": {
+                "title": "Property Type Distribution",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 23,
+            "width": 2,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "f7773c61",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "8bf848ca",
+                  "fields": [
+                    {
+                      "name": "sum(ratio_of_superhost)",
+                      "expression": "SUM(`ratio_of_superhost`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "sum(ratio_of_superhost)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Sum of ratio_of_superhost"
+                }
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Superhosts"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 23,
+            "width": 2,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "ff3cb07f",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4214659f",
+                  "fields": [
+                    {
+                      "name": "latitude",
+                      "expression": "`latitude`"
+                    },
+                    {
+                      "name": "longitude",
+                      "expression": "`longitude`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "symbol-map",
+              "encodings": {
+                "coordinates": {
+                  "latitude": {
+                    "fieldName": "latitude",
+                    "displayName": "latitude"
+                  },
+                  "longitude": {
+                    "fieldName": "longitude",
+                    "displayName": "longitude"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 5,
+            "width": 2,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "e81501ee",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "dc5bb0be",
+                  "fields": [
+                    {
+                      "name": "pickup_zip",
+                      "expression": "`pickup_zip`"
+                    },
+                    {
+                      "name": "sum(fare_amount)",
+                      "expression": "SUM(`fare_amount`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "pickup_zip",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "pickup_zip"
+                },
+                "y": {
+                  "fieldName": "sum(fare_amount)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Sum of fare_amount"
+                }
+              },
+              "annotations": [
+                {
+                  "type": "horizontal-line",
+                  "encodings": {
+                    "y": {
+                      "dataValue": "100",
+                      "dataType": "DOUBLE"
+                    },
+                    "color": {
+                      "value": {
+                        "themeColorType": "visualizationColors",
+                        "position": 2
+                      }
+                    },
+                    "label": {
+                      "value": "abc"
+                    }
+                  }
+                },
+                {
+                  "type": "horizontal-line",
+                  "encodings": {
+                    "y": {
+                      "dataValue": "40",
+                      "dataType": "DOUBLE"
+                    },
+                    "label": {
+                      "value": "asdfa"
+                    }
+                  }
+                },
+                {
+                  "type": "horizontal-line",
+                  "encodings": {
+                    "y": {
+                      "dataValue": "23",
+                      "dataType": "DOUBLE"
+                    },
+                    "label": {
+                      "value": "111"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 28,
+            "width": 2,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "9e97ba2c",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4214659f",
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {}
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 28,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "453a82f6",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "61b6d88c",
+                  "fields": [
+                    {
+                      "name": "avg_review_score",
+                      "expression": "`avg_review_score`"
+                    },
+                    {
+                      "name": "neighbourhood_cleansed",
+                      "expression": "`neighbourhood_cleansed`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "avg_review_score",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "avg_review_score"
+                },
+                "color": {
+                  "fieldName": "neighbourhood_cleansed",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "displayName": "neighbourhood_cleansed"
+                },
+                "label": {
+                  "show": false
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 11,
+            "width": 4,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "cac434e9",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4214659f",
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {}
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "48561376",
+            "queries": [
+              {
+                "name": "dashboards/01ee875dcf1e1aa59e1b2f5a7e60b955/datasets/01ef1fa7015414aa80acd66ae1a105eb_avg_review_score",
+                "query": {
+                  "datasetName": "61b6d88c",
+                  "fields": [
+                    {
+                      "name": "avg_review_score",
+                      "expression": "`avg_review_score`"
+                    },
+                    {
+                      "name": "avg_review_score_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              },
+              {
+                "name": "dashboards/01ee875dcf1e1aa59e1b2f5a7e60b955/datasets/01ef7183a7fd18deb1538e309cb9afa7_ratio_of_superhost",
+                "query": {
+                  "datasetName": "8bf848ca",
+                  "fields": [
+                    {
+                      "name": "ratio_of_superhost",
+                      "expression": "`ratio_of_superhost`"
+                    },
+                    {
+                      "name": "ratio_of_superhost_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "avg_review_score",
+                    "displayName": "avg_review_score",
+                    "queryName": "dashboards/01ee875dcf1e1aa59e1b2f5a7e60b955/datasets/01ef1fa7015414aa80acd66ae1a105eb_avg_review_score"
+                  },
+                  {
+                    "fieldName": "ratio_of_superhost",
+                    "displayName": "ratio_of_superhost",
+                    "queryName": "dashboards/01ee875dcf1e1aa59e1b2f5a7e60b955/datasets/01ef7183a7fd18deb1538e309cb9afa7_ratio_of_superhost"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "showDescription": true,
+                "title": "",
+                "description": ""
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "b08db7ee",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4214659f",
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {}
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 11,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "3249348f",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "61b6d88c",
+                  "fields": [
+                    {
+                      "name": "neighbourhood_cleansed",
+                      "expression": "`neighbourhood_cleansed`"
+                    },
+                    {
+                      "name": "sum(total_listings)",
+                      "expression": "SUM(`total_listings`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "neighbourhood_cleansed",
+                  "scale": {
+                    "type": "categorical",
+                    "sort": {
+                      "by": "y-reversed"
+                    }
+                  },
+                  "displayName": "neighbourhood_cleansed"
+                },
+                "y": {
+                  "fieldName": "sum(total_listings)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "Sum of total_listings"
+                }
+              },
+              "frame": {
+                "title": "Total Listings by Neighborhood",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 3,
+            "height": 6
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    }
+  ]
+}
