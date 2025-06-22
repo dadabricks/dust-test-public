@@ -1,10 +1,10 @@
 {
   "datasets": [
     {
-      "name": "4214659f",
-      "displayName": "sf_airbnb",
+      "name": "8bf848ca",
+      "displayName": "Superhosts Ratio",
       "queryLines": [
-        "SELECT     * FROM  dm_qa.huanming_qa.sf_airbnbLIMIT  100"
+        "SELECT  SUM(CASE WHEN host_is_superhost = 't' THEN 1 ELSE 0 END) / COUNT(*) AS ratio_of_superhostFROM    dm_qa.huanming_qa.sf_airbnb       WHERE           "
       ]
     },
     {
@@ -29,10 +29,10 @@
       ]
     },
     {
-      "name": "8bf848ca",
-      "displayName": "Superhosts Ratio",
+      "name": "4214659f",
+      "displayName": "sf_airbnb",
       "queryLines": [
-        "SELECT  SUM(CASE WHEN host_is_superhost = 't' THEN 1 ELSE 0 END) / COUNT(*) AS ratio_of_superhostFROM    dm_qa.huanming_qa.sf_airbnb       WHERE           "
+        "SELECT     * FROM  dm_qa.huanming_qa.sf_airbnbLIMIT  100"
       ]
     }
   ],
@@ -723,5 +723,8 @@
       ],
       "pageType": "PAGE_TYPE_CANVAS"
     }
-  ]
+  ],
+  "uiSettings": {
+    "theme": {}
+  }
 }
