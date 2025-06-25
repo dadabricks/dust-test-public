@@ -1,0 +1,13 @@
+# The main pipeline for test3
+resources:
+  pipelines:
+    test3_pipeline:
+      name: test3_pipeline
+      catalog: main
+      schema: test3_${bundle.target}
+      libraries:
+        - notebook:
+            path: ../src/dlt_pipeline.ipynb
+
+      configuration:
+        bundle.sourcePath: ${workspace.file_path}/src
