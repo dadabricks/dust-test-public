@@ -1,17 +1,10 @@
 {
   "datasets": [
     {
-      "name": "dc5bb0be",
-      "displayName": "Measure",
+      "name": "8bf848ca",
+      "displayName": "Superhosts Ratio",
       "queryLines": [
-        "SELECT * FROM samples.nyctaxi.trips"
-      ],
-      "columns": [
-        {
-          "displayName": "p per d",
-          "description": "",
-          "expression": "try_divide(SUM(fare_amount), SUM(trip_distance))"
-        }
+        "SELECT  SUM(CASE WHEN host_is_superhost = 't' THEN 1 ELSE 0 END) / COUNT(*) AS ratio_of_superhostFROM    dm_qa.huanming_qa.sf_airbnb       WHERE           "
       ]
     },
     {
@@ -29,10 +22,17 @@
       ]
     },
     {
-      "name": "8bf848ca",
-      "displayName": "Superhosts Ratio",
+      "name": "dc5bb0be",
+      "displayName": "Measure",
       "queryLines": [
-        "SELECT  SUM(CASE WHEN host_is_superhost = 't' THEN 1 ELSE 0 END) / COUNT(*) AS ratio_of_superhostFROM    dm_qa.huanming_qa.sf_airbnb       WHERE           "
+        "SELECT * FROM samples.nyctaxi.trips"
+      ],
+      "columns": [
+        {
+          "displayName": "p per d",
+          "description": "",
+          "expression": "try_divide(SUM(fare_amount), SUM(trip_distance))"
+        }
       ]
     }
   ],
@@ -723,8 +723,5 @@
       ],
       "pageType": "PAGE_TYPE_CANVAS"
     }
-  ],
-  "uiSettings": {
-    "theme": {}
-  }
+  ]
 }
