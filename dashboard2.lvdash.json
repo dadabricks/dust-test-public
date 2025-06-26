@@ -1,4 +1,11 @@
 {
+  "pages": [
+    {
+      "name": "ac86795a",
+      "displayName": "untitled page 1",
+      "pageType": "PAGE_TYPE_CANVAS"
+    }
+  ],
   "uiSettings": {
     "theme": {}
   }
