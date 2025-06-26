@@ -1,10 +1,10 @@
 {
   "datasets": [
     {
-      "name": "8bf848ca",
-      "displayName": "Superhosts Ratio",
+      "name": "61b6d88c",
+      "displayName": "Per Neighborhoods",
       "queryLines": [
-        "SELECT  SUM(CASE WHEN host_is_superhost = 't' THEN 1 ELSE 0 END) / COUNT(*) AS ratio_of_superhostFROM    dm_qa.huanming_qa.sf_airbnb       WHERE           "
+        "-- airbnb neighbourhood_cleansed statsWITH neighborhood_stats AS (  SELECT    neighbourhood_cleansed,    COUNT(*) AS total_listings,    AVG(review_scores_rating) AS avg_review_score  FROM    dm_qa.huanming_qa.sf_airbnb  GROUP BY    neighbourhood_cleansed),neighborhood_median AS (  SELECT    neighbourhood_cleansed,    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY review_scores_rating) AS median_review_score  FROM    dm_qa.huanming_qa.sf_airbnb  GROUP BY    neighbourhood_cleansed)SELECT  ns.neighbourhood_cleansed,  ns.total_listings,  ns.avg_review_score,  nm.median_review_scoreFROM  neighborhood_stats nsJOIN  neighborhood_median nmON  ns.neighbourhood_cleansed = nm.neighbourhood_cleansedORDER BY  ns.total_listings DESCLIMIT 10"
       ]
     },
     {
@@ -12,13 +12,6 @@
       "displayName": "sf_airbnb",
       "queryLines": [
         "SELECT     * FROM  dm_qa.huanming_qa.sf_airbnbLIMIT  100"
-      ]
-    },
-    {
-      "name": "61b6d88c",
-      "displayName": "Per Neighborhoods",
-      "queryLines": [
-        "-- airbnb neighbourhood_cleansed statsWITH neighborhood_stats AS (  SELECT    neighbourhood_cleansed,    COUNT(*) AS total_listings,    AVG(review_scores_rating) AS avg_review_score  FROM    dm_qa.huanming_qa.sf_airbnb  GROUP BY    neighbourhood_cleansed),neighborhood_median AS (  SELECT    neighbourhood_cleansed,    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY review_scores_rating) AS median_review_score  FROM    dm_qa.huanming_qa.sf_airbnb  GROUP BY    neighbourhood_cleansed)SELECT  ns.neighbourhood_cleansed,  ns.total_listings,  ns.avg_review_score,  nm.median_review_scoreFROM  neighborhood_stats nsJOIN  neighborhood_median nmON  ns.neighbourhood_cleansed = nm.neighbourhood_cleansedORDER BY  ns.total_listings DESCLIMIT 10"
       ]
     },
     {
@@ -33,6 +26,13 @@
           "description": "",
           "expression": "try_divide(SUM(fare_amount), SUM(trip_distance))"
         }
+      ]
+    },
+    {
+      "name": "8bf848ca",
+      "displayName": "Superhosts Ratio",
+      "queryLines": [
+        "SELECT  SUM(CASE WHEN host_is_superhost = 't' THEN 1 ELSE 0 END) / COUNT(*) AS ratio_of_superhostFROM    dm_qa.huanming_qa.sf_airbnb       WHERE           "
       ]
     }
   ],
