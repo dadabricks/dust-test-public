@@ -16,10 +16,19 @@ print("cwd:", os.getcwd())
 print("PYTHON_REPO_PATH:", os.environ.get("PYTHON_REPO_PATH"))
 print("PYTHON_NOTEBOOK_PATH:", os.environ.get("PYTHON_NOTEBOOK_PATH"))
 print("driver sys.path:", sys.path)
+print("--- abspath mapping (what normalize_workspace_includes relies on) ---")
+for _p in list(sys.path):
+    print(repr(_p), "->", repr(os.path.abspath(_p)))
 try:
     from pyspark.sql.connect.utils import normalize_workspace_includes
 
-    print("normalize_workspace_includes():", normalize_workspace_includes())
+    # Default-arg call reproduces what the UDF build does; explicit call passes the LIVE
+    # sys.path. If these differ, the mutable-default binding is stale (reassigned sys.path).
+    print("normalize_workspace_includes() [default arg]:", normalize_workspace_includes())
+    print(
+        "normalize_workspace_includes(list(sys.path)) [explicit live]:",
+        normalize_workspace_includes(list(sys.path)),
+    )
 except Exception as e:  # noqa: BLE001 - diagnostic only
     print("could not import normalize_workspace_includes:", repr(e))
 
